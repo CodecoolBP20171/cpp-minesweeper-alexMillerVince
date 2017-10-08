@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 
 namespace {
     class Minesweeper {
@@ -22,16 +23,48 @@ namespace {
         }
 
         void countNeighbours() {
-            // step 2 goes here
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int idx = i * width + j;
+                    if (table[idx] == '.') {
+                        table[idx] = getCount(i, j);
+                    }
+                }
+            }
         }
 
         void printTable() const {
-            // step 3 goes here
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    int idx = i * width + j;
+                    std::cout << table[idx] << ' ';
+                }
+                std::cout << std::endl;
+            }
+            std::cout << std::endl;
         }
 
     private:
         void fillTable() {
-            // step 1 goes here
+            std::random_device rnd;
+            for (int i = 0; i < width * height; i++) {
+                table[i] = rnd() % 100 > 10 ? '.' : '*';
+            }
+        }
+
+        char getCount(const int y, const int x) const {
+            int counter = 0;
+            for (int i = -1; i <= 1; i++) {
+                int cy = y + i;
+                if (cy < 0 || cy >= height) continue;
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue;
+                    int cx = x + j;
+                    if (cx < 0 || cx >= width) continue;
+                    if (table[cy * width + cx] == '*') counter++;
+                }
+            }
+            return (char) ('0' + counter);
         }
 
         const size_t width, height;
@@ -41,7 +74,7 @@ namespace {
 
 int main() {
     try {
-        Minesweeper ms(100, 50);
+        Minesweeper ms(20, 10);
         ms.printTable();
         ms.countNeighbours();
         ms.printTable();
